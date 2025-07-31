@@ -1,26 +1,56 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
-function App() {
+import Header from "./components/Header";
+import Hero from "./components/Hero";
+import ProductGrid from "./components/bestproduct";
+import BishtatSection from "./components/bestsellerSection";
+import Footer from "./components/Footer";
+import CartPage from "./pages/CartPage";
+import AshProducts from "./components/ashProductS";
+import ProductDetails from "./pages/ProductDetails";
+import AboutUs from "./components/AboutUs";
+import CollectionsPage from "./pages/CollectionsPage";
+import AdminDashboard from "./pages/AdminDashboar";
+import LoginPage from "./pages/LoginPage";
+import ProtectedRoute from "./routes/ProtectedRoute"; // ✅ استدعاء الراوت المحمي
+import AdminOrdersPage from "./pages/AdminOrdersPage";
+
+const App = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <div>
+        <Header />
+
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <>
+                <Hero />
+                <ProductGrid />
+                <BishtatSection />
+              </>
+            }
+          />
+          <Route path="/login" element={<LoginPage />} />
+          <Route element={<ProtectedRoute />}>
+            <Route path="/admin" element={<AdminDashboard />} />
+          </Route>
+          <Route path="/collections" element={<CollectionsPage />} />
+          <Route path="/aboutus" element={<AboutUs />} />
+          <Route path="/products" element={<AshProducts />} />
+          <Route path="/cart" element={<CartPage />} />
+          <Route path="/product/:id" element={<ProductDetails />} />
+          <Route element={<ProtectedRoute />}>
+            <Route path="/admin/orders" element={<AdminOrdersPage />} />
+          </Route>
+        </Routes>
+
+        <Footer />
+      </div>
+    </Router>
   );
-}
+};
 
 export default App;
