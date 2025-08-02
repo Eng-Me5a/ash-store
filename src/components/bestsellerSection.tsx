@@ -16,7 +16,7 @@ const BishtatSection = () => {
   const { updateCartCount } = useCart();
 
 useEffect(() => {
-  fetch('https://ash-backend1-production.up.railway.app/bestseller')
+  fetch('https://ash-backend1-production.up.railway.app/bestproduct')
     .then(res => res.json())
     .then(data => setBishtat(data))
     .catch(err => console.error('فشل تحميل البيشتات', err))
