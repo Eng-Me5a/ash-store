@@ -22,7 +22,7 @@ const AshProducts = () => {
   const { updateCartCount } = useCart();
 
   useEffect(() => {
-    fetch("https://ash-backend1-production.up.railway.app/allproducts")
+    fetch("https://gracious-growth-production.up.railway.app/allproducts")
       .then((res) => res.json())
       .then((data) => setProducts(data))
       .catch((err) => console.error("Failed to load products", err))

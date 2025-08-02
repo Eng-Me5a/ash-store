@@ -95,7 +95,7 @@ const CartPage = () => {
           total: calculateTotal(),
         };
 
-        fetch("https://ash-backend1-production.up.railway.app/orders", {
+        fetch("https://gracious-growth-production.up.railway.app/orders", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(order),

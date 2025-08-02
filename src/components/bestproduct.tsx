@@ -19,7 +19,7 @@ const ProductGrid = () => {
   const { updateCartCount } = useCart();
 
   useEffect(() => {
-    fetch('https://ash-backend1-production.up.railway.app/bestseller')
+    fetch('https://gracious-growth-production.up.railway.app/bestseller')
       .then(res => res.json())
       .then(data => setProducts(data))
       .catch(err => console.error('Failed to load products', err))
