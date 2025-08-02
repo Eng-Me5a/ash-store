@@ -5,11 +5,12 @@ import { FaCartPlus } from 'react-icons/fa';
 import { useCart } from '../context/CartContext';
 import { Link } from 'react-router-dom';
 
+// تحديث واجهة Product لتتوافق مع الموديل الجديد
 interface Product {
-  _id: string;
-  name: string;
-  imageUrl: string;
-  price: number;
+  _id: string; // المعرف الآن هو _id من MongoDB
+  name: string; // الاسم الآن هو name بدلاً من title
+  imageUrl: string; // الصورة الآن هي imageUrl بدلاً من image
+  price: number; // السعر الآن هو number بدلاً من string
   quantity?: number;
 }
 
@@ -18,24 +19,18 @@ const AshProducts = () => {
   const [loading, setLoading] = useState(true);
   const { updateCartCount } = useCart();
 
-  useEffect(() => {
-    const API_BASE_URL = 'https://ash-backend1-production.up.railway.app';
-
-    fetch(`${API_BASE_URL}/allproducts`)
-      .then(res => {
-        if (!res.ok) {
-          throw new Error(`HTTP error! status: ${res.status}`);
-        }
-        return res.json();
-      })
-      .then(data => setProducts(data))
-      .catch(err => console.error('فشل تحميل المنتجات:', err))
-      .finally(() => setLoading(false));
-  }, []);
+useEffect(() => {
+  fetch('https://ash-backend1-production.up.railway.app/bestseller')
+    .then(res => res.json())
+    .then(data => setProducts(data))
+    .catch(err => console.error('فشل تحميل البيشتات', err))
+    .finally(() => setLoading(false));
+}, []);
 
   const addToCart = (product: Product) => {
     const existingCart: Product[] = JSON.parse(localStorage.getItem('cart') || '[]');
     const updatedCart = [...existingCart];
+    // استخدام _id للمقارنة
     const existingIndex = updatedCart.findIndex((item) => item._id === product._id);
 
     if (existingIndex !== -1) {
@@ -51,7 +46,7 @@ const AshProducts = () => {
   return (
     <section className="py-5 bg-light">
       <Container>
-        <h2 className="mb-4 my-5 text-center fw-bold">🛜️ منتجات Ash</h2>
+        <h2 className="mb-4 my-5 text-center fw-bold">🛍️ منتجات Ash</h2>
 
         {loading ? (
           <div className="text-center"><Spinner animation="border" /></div>
@@ -63,19 +58,19 @@ const AshProducts = () => {
                   <Card className="h-100 shadow-sm text-center card-hover border-0">
                     <Card.Img
                       variant="top"
-                      src={product.imageUrl}
-                      alt={product.name}
+                      src={product.imageUrl} // استخدام imageUrl بدلاً من image
+                      alt={product.name} // استخدام name بدلاً من title
                       style={{ height: '250px', objectFit: 'cover', borderTopLeftRadius: '16px', borderTopRightRadius: '16px' }}
                     />
                     <Card.Body className="d-flex flex-column justify-content-between">
-                      <Card.Text className="fw-bold fs-5 mb-2">{product.name}</Card.Text>
+                      <Card.Text className="fw-bold fs-5 mb-2">{product.name}</Card.Text> {/* استخدام name بدلاً من title */}
                       <div className="d-flex justify-content-between align-items-center mt-auto">
                         <span className="text-danger fw-bold fs-6">{product.price} جنيه</span>
                         <Button
                           variant="dark"
                           size="sm"
                           onClick={(e) => {
-                            e.preventDefault();
+                            e.preventDefault(); // عشان الرابط ميشتغلش لما تضغط الزر
                             addToCart(product);
                           }}
                         >
