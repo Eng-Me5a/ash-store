@@ -48,7 +48,7 @@ const AshProducts = () => {
   };
 
   return (
-    <section className="py-5 my-5" style={{ background: "linear-gradient(to bottom, #ffffff, #f8f9fa)" }}>
+    <section className="py-5" style={{ background: "linear-gradient(to bottom, #ffffff, #f8f9fa)" }}>
       <Container>
         <div className="text-center mb-5">
           <h2 className="fw-bold display-5 mb-3" style={{ 

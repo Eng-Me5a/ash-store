@@ -92,7 +92,7 @@ const ProductGrid = () => {
                         bg="danger" 
                         className="position-absolute top-0 start-0 m-3 d-flex align-items-center"
                       >
-                        <FaFire className="me-1" />أفضل منتجاتنا
+                        <FaFire className="me-1" /> الأكثر مبيعاً
                       </Badge>
                       {product.rating && (
                         <Badge 

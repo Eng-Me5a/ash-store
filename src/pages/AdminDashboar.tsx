@@ -253,7 +253,7 @@ const AdminDashboard = () => {
                           <FaImage className="text-muted" />
                         )}
                       </td>
-                      <td className='text-center'>
+                      <td>
                         <Button
                           variant="outline-danger"
                           size="sm"
@@ -261,7 +261,10 @@ const AdminDashboard = () => {
                           className="me-2"
                         >
                           <FaTrash />
-                        </Button> 
+                        </Button>
+                        <Button variant="outline-primary" size="sm">
+                          <FaEdit />
+                        </Button>
                       </td>
                     </tr>
                   ))}
