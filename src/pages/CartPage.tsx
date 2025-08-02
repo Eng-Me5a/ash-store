@@ -1,4 +1,3 @@
-// src/pages/CartPage.tsx
 import React, { useEffect, useState } from 'react';
 import { Button, Container } from 'react-bootstrap';
 import { useCart } from '../context/CartContext';
@@ -63,59 +62,73 @@ const CartPage = () => {
   };
 
   const handleOrderClick = () => {
-  let name = '', address = '', phone = '';
+    let name = '', address = '', phone = '';
 
-  MySwal.fire({
-    title: '📋 بيانات العميل',
-    html: `
-      <input type="text" id="name" class="swal2-input" placeholder="الاسم">
-      <input type="text" id="address" class="swal2-input" placeholder="العنوان">
-      <input type="text" id="phone" class="swal2-input" placeholder="رقم الهاتف">
-    `,
-    confirmButtonText: 'إرسال الطلب ✅',
-    showCancelButton: true,
-    cancelButtonText: 'إلغاء',
-    focusConfirm: false,
-    preConfirm: () => {
-      name = (document.getElementById('name') as HTMLInputElement).value;
-      address = (document.getElementById('address') as HTMLInputElement).value;
-      phone = (document.getElementById('phone') as HTMLInputElement).value;
+    MySwal.fire({
+      title: '📋 بيانات العميل',
+      html: `
+        <input type="text" id="name" class="swal2-input" placeholder="الاسم">
+        <input type="text" id="address" class="swal2-input" placeholder="العنوان">
+        <input type="text" id="phone" class="swal2-input" placeholder="رقم الهاتف">
+      `,
+      confirmButtonText: 'إرسال الطلب ✅',
+      showCancelButton: true,
+      cancelButtonText: 'إلغاء',
+      focusConfirm: false,
+      preConfirm: () => {
+        name = (document.getElementById('name') as HTMLInputElement).value;
+        address = (document.getElementById('address') as HTMLInputElement).value;
+        phone = (document.getElementById('phone') as HTMLInputElement).value;
 
-      if (!name || !address || !phone) {
-        Swal.showValidationMessage('من فضلك املأ جميع الحقول');
-        return false;
+        if (!name || !address || !phone) {
+          Swal.showValidationMessage('من فضلك املأ جميع الحقول');
+          return false;
+        }
+
+        return { name, address, phone };
       }
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const order = {
+          customer: result.value,
+          cart,
+          total: calculateTotal(),
+        };
 
-      return { name, address, phone };
-    }
-  }).then((result) => {
-    if (result.isConfirmed) {
-      const order = {
-        customer: result.value,
-        cart,
-        total: calculateTotal(),
-      };
+        fetch("https://ash-backend1-production.up.railway.app/orders", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(order),
+        })
+          .then((res) => {
+            if (!res.ok) throw new Error("فشل في إرسال الطلب");
+            return res.json();
+          })
+          .then(() => {
+            // تنظيف السلة
+            localStorage.removeItem('cart');
+            setCart([]);
+            updateCartCount();
 
-      // ✅ حفظ الطلب في localStorage
-      const existingOrders = JSON.parse(localStorage.getItem('orders') || '[]');
-      const updatedOrders = [...existingOrders, order];
-      localStorage.setItem('orders', JSON.stringify(updatedOrders));
-
-      // ✅ تنظيف السلة
-      localStorage.removeItem('cart');
-      setCart([]);
-      updateCartCount();
-
-      Swal.fire({
-        icon: 'success',
-        title: 'تم إرسال الطلب بنجاح!',
-        text: 'سيتم التواصل معك قريبًا.',
-        timer: 4000,
-        showConfirmButton: false,
-      });
-    }
-  });
-};
+            Swal.fire({
+              icon: 'success',
+              title: 'تم إرسال الطلب بنجاح!',
+              text: 'سيتم التواصل معك قريبًا.',
+              timer: 4000,
+              showConfirmButton: false,
+            });
+          })
+          .catch((error) => {
+            console.error("خطأ أثناء إرسال الطلب:", error);
+            Swal.fire({
+              icon: 'error',
+              title: 'حدث خطأ',
+              text: 'لم يتم إرسال الطلب. حاول مرة أخرى لاحقًا.',
+            });
+          });
+      }
+    });
+  };
 
   return (
     <Container className="py-5 my-5">

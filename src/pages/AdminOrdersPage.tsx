@@ -11,6 +11,7 @@ interface Product {
 }
 
 interface Order {
+  _id: string;
   customer?: {
     name: string;
     address: string;
@@ -28,21 +29,25 @@ const AdminOrdersPage = () => {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("all");
 
-  useEffect(() => {
-    // Simulate loading from API
-    setTimeout(() => {
-      const storedOrders = JSON.parse(localStorage.getItem("orders") || "[]");
-      setOrders(storedOrders);
-      setLoading(false);
-    }, 500);
-  }, []);
-
-  const updateOrders = (updated: Order[]) => {
-    setOrders(updated);
-    localStorage.setItem("orders", JSON.stringify(updated));
+  const fetchOrders = () => {
+    setLoading(true);
+    fetch("https://ash-backend1-production.up.railway.app/orders")
+      .then((res) => res.json())
+      .then((data) => {
+        setOrders(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("فشل في جلب الطلبات:", err);
+        setLoading(false);
+      });
   };
 
-  const handleDeleteOrder = (index: number) => {
+  useEffect(() => {
+    fetchOrders();
+  }, []);
+
+  const handleDeleteOrder = (id: string) => {
     Swal.fire({
       title: "حذف الطلب",
       text: "هل أنت متأكد من حذف هذا الطلب؟ لا يمكن التراجع عن هذه العملية",
@@ -54,22 +59,26 @@ const AdminOrdersPage = () => {
       reverseButtons: true
     }).then((result) => {
       if (result.isConfirmed) {
-        const updated = [...orders];
-        updated.splice(index, 1);
-        updateOrders(updated);
-        Swal.fire("تم الحذف!", "تم حذف الطلب بنجاح.", "success");
+        fetch(`https://ash-backend1-production.up.railway.app/orders/${id}`, {
+          method: "DELETE",
+        })
+          .then(() => {
+            Swal.fire("تم الحذف!", "تم حذف الطلب بنجاح.", "success");
+            fetchOrders();
+          })
+          .catch((err) => console.error("فشل حذف الطلب:", err));
       }
     });
   };
 
-  const updateOrderStatus = (index: number, status: string) => {
-    const updated = [...orders];
-    updated[index] = {
-      ...updated[index],
-      status,
-      date: new Date().toISOString()
-    };
-    updateOrders(updated);
+  const updateOrderStatus = (id: string, status: string) => {
+    fetch(`https://ash-backend1-production.up.railway.app/orders/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status, date: new Date().toISOString() }),
+    })
+      .then(() => fetchOrders())
+      .catch((err) => console.error("خطأ في تحديث الطلب:", err));
   };
 
   const filteredOrders = orders.filter(order => {
@@ -141,7 +150,7 @@ const AdminOrdersPage = () => {
         </Card>
       ) : (
         filteredOrders.map((order, idx) => (
-          <Card className="mb-4 shadow-sm border-0" key={idx}>
+          <Card className="mb-4 shadow-sm border-0" key={order._id}>
             <Card.Header className="bg-light d-flex justify-content-between align-items-center py-3">
               <div className="d-flex flex-wrap align-items-center gap-3">
                 <div className="d-flex align-items-center">
@@ -197,21 +206,21 @@ const AdminOrdersPage = () => {
                 <div className="d-flex gap-2">
                   <Button
                     variant={order.status === "قيد التجهيز" ? "warning" : "outline-warning"}
-                    onClick={() => updateOrderStatus(idx, "قيد التجهيز")}
+                    onClick={() => updateOrderStatus(order._id, "قيد التجهيز")}
                     size="sm"
                   >
                     <FaTruck className="me-1" /> قيد التجهيز
                   </Button>
                   <Button
                     variant={order.status === "مكتمل" ? "success" : "outline-success"}
-                    onClick={() => updateOrderStatus(idx, "مكتمل")}
+                    onClick={() => updateOrderStatus(order._id, "مكتمل")}
                     size="sm"
                   >
                     <FaCheck className="me-1" /> مكتمل
                   </Button>
                   <Button
                     variant="outline-danger"
-                    onClick={() => handleDeleteOrder(idx)}
+                    onClick={() => handleDeleteOrder(order._id)}
                     size="sm"
                   >
                     <FaTrash className="me-1" /> حذف

@@ -1,3 +1,4 @@
+// server.js أو index.js
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
@@ -15,7 +16,7 @@ mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("✅ Connected to MongoDB"))
   .catch((err) => console.error("❌ MongoDB error:", err));
 
-// ✅ تعريف Schema
+// ✅ Schemas
 const productSchema = new mongoose.Schema({
   name: String,
   price: Number,
@@ -23,17 +24,40 @@ const productSchema = new mongoose.Schema({
   category: String,
 }, { timestamps: true });
 
+const orderSchema = new mongoose.Schema({
+  customer: {
+    name: String,
+    address: String,
+    phone: String,
+    notes: String,
+  },
+  cart: [
+    {
+      id: Number,
+      title: String,
+      price: String,
+      quantity: Number,
+    }
+  ],
+  total: Number,
+  status: { type: String, default: "" },
+  date: { type: Date, default: Date.now }
+});
+
 const BestProduct = mongoose.model("BestProduct", productSchema);
 const AllProduct = mongoose.model("AllProduct", productSchema);
 const Collection = mongoose.model("Collection", productSchema);
 const BestSeller = mongoose.model("BestSeller", productSchema);
+const Order = mongoose.model("Order", orderSchema);
 
-// ✅ Endpoints لـ BestProduct
+// ✅ Endpoints للمنتجات
+
+// BestProduct
 app.get("/bestproduct", async (req, res) => {
   const data = await BestProduct.find();
   res.json(data);
 });
-app.post("/api/bestproduct", async (req, res) => {
+app.post("/bestproduct", async (req, res) => {
   const product = new BestProduct(req.body);
   await product.save();
   res.status(201).json(product);
@@ -43,7 +67,7 @@ app.delete("/bestproduct/:id", async (req, res) => {
   res.sendStatus(204);
 });
 
-// ✅ Endpoints لـ AllProducts
+// AllProduct
 app.get("/allproducts", async (req, res) => {
   const data = await AllProduct.find();
   res.json(data);
@@ -58,7 +82,7 @@ app.delete("/allproducts/:id", async (req, res) => {
   res.sendStatus(204);
 });
 
-// ✅ Endpoints لـ Collections
+// Collection
 app.get("/collections", async (req, res) => {
   const data = await Collection.find();
   res.json(data);
@@ -73,7 +97,7 @@ app.delete("/collections/:id", async (req, res) => {
   res.sendStatus(204);
 });
 
-// ✅ Endpoints لـ BestSeller
+// BestSeller
 app.get("/bestseller", async (req, res) => {
   const data = await BestSeller.find();
   res.json(data);
@@ -88,7 +112,36 @@ app.delete("/bestseller/:id", async (req, res) => {
   res.sendStatus(204);
 });
 
+// ✅ Endpoints للطلبات (Orders)
+
+// عرض كل الطلبات
+app.get("/orders", async (req, res) => {
+  const orders = await Order.find().sort({ date: -1 });
+  res.json(orders);
+});
+
+// إنشاء طلب جديد
+app.post("/orders", async (req, res) => {
+  const order = new Order(req.body);
+  await order.save();
+  res.status(201).json(order);
+});
+
+// تحديث حالة الطلب
+app.put("/orders/:id", async (req, res) => {
+  const { status } = req.body;
+  const updated = await Order.findByIdAndUpdate(req.params.id, { status }, { new: true });
+  res.json(updated);
+});
+
+// حذف طلب
+app.delete("/orders/:id", async (req, res) => {
+  await Order.findByIdAndDelete(req.params.id);
+  res.sendStatus(204);
+});
+
 // ✅ تشغيل السيرفر
-app.listen(process.env.PORT || 5000, () => {
-  console.log(`✅ Server running on port ${process.env.PORT || 5000}`);
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`✅ Server running on port ${PORT}`);
 });
