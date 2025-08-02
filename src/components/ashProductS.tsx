@@ -18,20 +18,14 @@ const AshProducts = () => {
   const [loading, setLoading] = useState(true);
   const { updateCartCount } = useCart();
 
-  useEffect(() => {
-    const API_BASE_URL = 'https://ash-backend1-production.up.railway.app';
 
-    fetch(`${API_BASE_URL}/api/products/allproducts`)
-      .then(res => {
-        if (!res.ok) {
-          throw new Error(`HTTP error! status: ${res.status}`);
-        }
-        return res.json();
-      })
-      .then(data => setProducts(data))
-      .catch(err => console.error('فشل تحميل المنتجات:', err))
-      .finally(() => setLoading(false));
-  }, []);
+useEffect(() => {
+  fetch('https://ash-backend1-production.up.railway.app/allproducts')
+    .then(res => res.json())
+    .then(data => setProducts(data))
+    .catch(err => console.error('فشل تحميل البيشتات', err))
+    .finally(() => setLoading(false));
+}, []);
 
   const addToCart = (product: Product) => {
     const existingCart: Product[] = JSON.parse(localStorage.getItem('cart') || '[]');
