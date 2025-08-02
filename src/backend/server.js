@@ -33,7 +33,7 @@ app.get("/bestproduct", async (req, res) => {
   const data = await BestProduct.find();
   res.json(data);
 });
-app.post("/bestproduct", async (req, res) => {
+app.post("/api/bestproduct", async (req, res) => {
   const product = new BestProduct(req.body);
   await product.save();
   res.status(201).json(product);
