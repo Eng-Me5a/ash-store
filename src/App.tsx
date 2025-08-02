@@ -36,15 +36,14 @@ const App = () => {
           <Route path="/login" element={<LoginPage />} />
           <Route element={<ProtectedRoute />}>
             <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/admin/orders" element={<AdminOrdersPage />} />
           </Route>
           <Route path="/collections" element={<CollectionsPage />} />
           <Route path="/aboutus" element={<AboutUs />} />
           <Route path="/products" element={<AshProducts />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/product/:id" element={<ProductDetails />} />
-          <Route element={<ProtectedRoute />}>
-            <Route path="/admin/orders" element={<AdminOrdersPage />} />
-          </Route>
+          
         </Routes>
 
         <Footer />
