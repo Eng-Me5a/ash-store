@@ -20,7 +20,7 @@ const AshProducts = () => {
   const { updateCartCount } = useCart();
 
 useEffect(() => {
-  fetch('https://ash-backend1-production.up.railway.app/bestseller')
+  fetch('https://ash-backend1-production.up.railway.app/allproducts')
     .then(res => res.json())
     .then(data => setProducts(data))
     .catch(err => console.error('فشل تحميل البيشتات', err))
