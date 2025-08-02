@@ -119,7 +119,7 @@ const ProductGrid = () => {
                       <div className="mt-auto">
                         <div className="d-flex justify-content-between align-items-center mb-3">
                           <h5 className="mb-0" style={{ color: '#dc3545', fontWeight: 'bold' }}>
-                            {product.price.toLocaleString()} جنيه
+                          {product.price ? Number(product.price).toLocaleString() : '0'} جنيه
                           </h5>
                           <Button
                             variant="primary"
