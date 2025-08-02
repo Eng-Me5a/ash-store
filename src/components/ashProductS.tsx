@@ -6,10 +6,10 @@ import { useCart } from '../context/CartContext';
 import { Link } from 'react-router-dom';
 
 interface Product {
-  id: number;
-  title: string;
-  image: string;
-  price: string;
+  _id: string;
+  name: string;
+  imageUrl: string;
+  price: number;
   quantity?: number;
 }
 
@@ -19,17 +19,24 @@ const AshProducts = () => {
   const { updateCartCount } = useCart();
 
   useEffect(() => {
-    fetch('http://localhost:5000/allproducts')
-      .then(res => res.json())
+    const API_BASE_URL = 'https://ash-backend1-production.up.railway.app';
+
+    fetch(`${API_BASE_URL}/api/products/allproducts`)
+      .then(res => {
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        return res.json();
+      })
       .then(data => setProducts(data))
-      .catch(err => console.error('فشل تحميل المنتجات', err))
+      .catch(err => console.error('فشل تحميل المنتجات:', err))
       .finally(() => setLoading(false));
   }, []);
 
   const addToCart = (product: Product) => {
     const existingCart: Product[] = JSON.parse(localStorage.getItem('cart') || '[]');
     const updatedCart = [...existingCart];
-    const existingIndex = updatedCart.findIndex((item) => item.id === product.id);
+    const existingIndex = updatedCart.findIndex((item) => item._id === product._id);
 
     if (existingIndex !== -1) {
       updatedCart[existingIndex].quantity = (updatedCart[existingIndex].quantity || 1) + 1;
@@ -44,31 +51,31 @@ const AshProducts = () => {
   return (
     <section className="py-5 bg-light">
       <Container>
-        <h2 className="mb-4 my-5 text-center fw-bold">🛍️ منتجات Ash</h2>
+        <h2 className="mb-4 my-5 text-center fw-bold">🛜️ منتجات Ash</h2>
 
         {loading ? (
           <div className="text-center"><Spinner animation="border" /></div>
         ) : (
           <Row>
             {products.map((product) => (
-              <Col key={product.id} md={4} sm={6} xs={12} className="mb-4">
-                <Link to={`/product/allproducts/${product.id}`} className="text-decoration-none text-dark">
+              <Col key={product._id} md={4} sm={6} xs={12} className="mb-4">
+                <Link to={`/product/allproducts/${product._id}`} className="text-decoration-none text-dark">
                   <Card className="h-100 shadow-sm text-center card-hover border-0">
                     <Card.Img
                       variant="top"
-                      src={product.image}
-                      alt={product.title}
+                      src={product.imageUrl}
+                      alt={product.name}
                       style={{ height: '250px', objectFit: 'cover', borderTopLeftRadius: '16px', borderTopRightRadius: '16px' }}
                     />
                     <Card.Body className="d-flex flex-column justify-content-between">
-                      <Card.Text className="fw-bold fs-5 mb-2">{product.title}</Card.Text>
+                      <Card.Text className="fw-bold fs-5 mb-2">{product.name}</Card.Text>
                       <div className="d-flex justify-content-between align-items-center mt-auto">
                         <span className="text-danger fw-bold fs-6">{product.price} جنيه</span>
                         <Button
                           variant="dark"
                           size="sm"
                           onClick={(e) => {
-                            e.preventDefault(); // عشان الرابط ميشتغلش لما تضغط الزر
+                            e.preventDefault();
                             addToCart(product);
                           }}
                         >

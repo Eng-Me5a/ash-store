@@ -15,13 +15,14 @@ const BishtatSection = () => {
   const [loading, setLoading] = useState(true);
   const { updateCartCount } = useCart();
 
-  useEffect(() => {
-    fetch('http://localhost:5000/bestseller') // اكثر مبيع
-      .then(res => res.json())
-      .then(data => setBishtat(data))
-      .catch(err => console.error('فشل تحميل البيشتات', err))
-      .finally(() => setLoading(false));
-  }, []);
+useEffect(() => {
+  fetch('https://ash-backend1-production.up.railway.app/bestseller')
+    .then(res => res.json())
+    .then(data => setBishtat(data))
+    .catch(err => console.error('فشل تحميل البيشتات', err))
+    .finally(() => setLoading(false));
+}, []);
+
 
 const addToCart = (product: Product) => {
   const existingCart = JSON.parse(localStorage.getItem('cart') || '[]');

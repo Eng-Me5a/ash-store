@@ -20,13 +20,14 @@ const CollectionsPage = () => {
   const [loading, setLoading] = useState(true);
   const { updateCartCount } = useCart();
 
-  useEffect(() => {
-    fetch('http://localhost:5000/collections')
-      .then((res) => res.json())
-      .then((data) => setProducts(data))
-      .catch((err) => console.error('فشل تحميل البيانات', err))
-      .finally(() => setLoading(false));
-  }, []);
+useEffect(() => {
+  fetch('https://ash-backend1-production.up.railway.app/collections')
+    .then((res) => res.json())
+    .then((data) => setProducts(data))
+    .catch((err) => console.error('فشل تحميل البيانات', err))
+    .finally(() => setLoading(false));
+}, []);
+
 
   const addToCart = (product: Product) => {
     const existingCart: Product[] = JSON.parse(localStorage.getItem('cart') || '[]');

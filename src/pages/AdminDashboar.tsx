@@ -11,6 +11,8 @@ interface Product {
   collection?: string;
 }
 
+const API_BASE = 'https://ash-backend1-production.up.railway.app';
+
 const AdminDashboard = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -25,14 +27,13 @@ const AdminDashboard = () => {
 
   const navigate = useNavigate();
   useEffect(() => {
-  const isLoggedIn = localStorage.getItem('adminAuth') === 'true';
-  if (!isLoggedIn) navigate('/login');
-}, [navigate]);
-
+    const isLoggedIn = localStorage.getItem('adminAuth') === 'true';
+    if (!isLoggedIn) navigate('/login');
+  }, [navigate]);
 
   const fetchProducts = () => {
     setLoading(true);
-    fetch(`http://localhost:5000/${section}`)
+    fetch(`${API_BASE}/${section}`)
       .then((res) => res.json())
       .then((data) => setProducts(data))
       .catch((err) => console.error(err))
@@ -44,7 +45,7 @@ const AdminDashboard = () => {
   }, [section]);
 
   const handleDelete = (id: number) => {
-    fetch(`http://localhost:5000/${section}/${id}`, {
+    fetch(`${API_BASE}/${section}/${id}`, {
       method: 'DELETE',
     })
       .then(() => fetchProducts())
@@ -52,7 +53,7 @@ const AdminDashboard = () => {
   };
 
   const handleAdd = () => {
-    fetch(`http://localhost:5000/${section}`, {
+    fetch(`${API_BASE}/${section}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(newProduct),
