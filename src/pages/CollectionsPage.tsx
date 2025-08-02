@@ -23,7 +23,7 @@ const CollectionsPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch('https://ash-backend1-production.up.railway.app/collections')
+    fetch('https://gracious-growth-production.up.railway.app/collections')
       .then((res) => res.json())
       .then((data) => setProducts(data))
       .catch((err) => console.error('Failed to load data', err))

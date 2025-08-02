@@ -16,7 +16,7 @@ interface Product {
   collection?: string;
 }
 
-const API_BASE = 'https://ash-backend1-production.up.railway.app';
+const API_BASE = 'https://gracious-growth-production.up.railway.app';
 
 const AdminDashboard = () => {
   const [products, setProducts] = useState<Product[]>([]);
