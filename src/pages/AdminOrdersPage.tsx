@@ -28,14 +28,19 @@ const AdminOrdersPage = () => {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("all");
 
-  useEffect(() => {
-    // Simulate loading from API
-    setTimeout(() => {
-      const storedOrders = JSON.parse(localStorage.getItem("orders") || "[]");
-      setOrders(storedOrders);
+useEffect(() => {
+  fetch("https://gracious-growth-production.up.railway.app/orders")
+    .then((res) => res.json())
+    .then((data) => {
+      setOrders(data.reverse()); // ترتيب تنازلي عشان الأحدث يظهر فوق
       setLoading(false);
-    }, 500);
-  }, []);
+    })
+    .catch((err) => {
+      console.error("فشل في تحميل الطلبات", err);
+      setLoading(false);
+    });
+}, []);
+
 
   const updateOrders = (updated: Order[]) => {
     setOrders(updated);

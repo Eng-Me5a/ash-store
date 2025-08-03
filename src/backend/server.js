@@ -27,10 +27,28 @@ const productSchema = new mongoose.Schema({
   collection: String,
 }, { timestamps: true });
 
+const orderSchema = new mongoose.Schema({
+  customer: {
+    name: String,
+    address: String,
+    phone: String,
+  },
+  cart: [
+    {
+      title: String,
+      price: String,
+      quantity: Number,
+      image: String,
+    }
+  ],
+  total: Number,
+}, { timestamps: true });
+
 const BestProduct = mongoose.model("BestProduct", productSchema);
 const AllProduct = mongoose.model("AllProduct", productSchema);
 const Collection = mongoose.model("Collection", productSchema);
 const BestSeller = mongoose.model("BestSeller", productSchema);
+const Order = mongoose.model("Order", orderSchema);
 
 // ✅ Endpoints لكل قسم
 
@@ -61,6 +79,21 @@ app.post("/allproducts", async (req, res) => {
 });
 app.delete("/allproducts/:id", async (req, res) => {
   await AllProduct.findByIdAndDelete(req.params.id);
+  res.sendStatus(204);
+});
+
+// Orders
+app.get("/orders", async (req, res) => {
+  const data = await Order.find();
+  res.json(data);
+});
+app.post("/orders", async (req, res) => {
+  const order = new Order(req.body);
+  await order.save();
+  res.status(201).json(order);
+});
+app.delete("/orders/:id", async (req, res) => {
+  await Order.findByIdAndDelete(req.params.id);
   res.sendStatus(204);
 });
 
