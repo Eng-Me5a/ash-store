@@ -222,7 +222,6 @@ const AdminOrdersPage = () => {
                         <td>{product.title}</td>
                         <td className="text-center">{product.quantity}</td>
                         <td className="text-end">{product.price} جنيه</td>
-                        <td className="text-end">{product.quantity * parseInt(product.price)} جنيه</td>
                       </tr>
                     ))}
                   </tbody>

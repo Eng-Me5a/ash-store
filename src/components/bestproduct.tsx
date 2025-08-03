@@ -1,16 +1,8 @@
-import React, { useEffect, useState } from "react";
-import {
-  Card,
-  Col,
-  Container,
-  Row,
-  Button,
-  Spinner,
-  Badge,
-} from "react-bootstrap";
-import { FaCartPlus, FaStar, FaFire } from "react-icons/fa";
-import { useCart } from "../context/CartContext";
-import { motion } from "framer-motion";
+import React, { useEffect, useState } from 'react';
+import { Card, Col, Container, Row, Button, Spinner, Badge } from 'react-bootstrap';
+import { FaCartPlus, FaStar, FaFire } from 'react-icons/fa';
+import { useCart } from '../context/CartContext';
+import { motion } from 'framer-motion';
 
 interface Product {
   id: string;
@@ -27,58 +19,44 @@ const ProductGrid = () => {
   const { updateCartCount } = useCart();
 
   useEffect(() => {
-    fetch("https://gracious-growth-production.up.railway.app/bestseller")
-      .then((res) => res.json())
-      .then((data) => setProducts(data))
-      .catch((err) => console.error("Failed to load products", err))
+    fetch('https://ash-backend1-production.up.railway.app/bestseller')
+      .then(res => res.json())
+      .then(data => setProducts(data))
+      .catch(err => console.error('Failed to load products', err))
       .finally(() => setLoading(false));
   }, []);
 
   const addToCart = (product: Product) => {
-    const existingCart = JSON.parse(localStorage.getItem("cart") || "[]");
-    const index = existingCart.findIndex(
-      (item: Product) => item.id === product.id
-    );
-
+    const existingCart = JSON.parse(localStorage.getItem('cart') || '[]');
+    const index = existingCart.findIndex((item: Product) => item.id === product.id);
+    
     if (index !== -1) {
       existingCart[index].quantity = (existingCart[index].quantity || 1) + 1;
     } else {
       existingCart.push({ ...product, quantity: 1 });
     }
 
-    localStorage.setItem("cart", JSON.stringify(existingCart));
+    localStorage.setItem('cart', JSON.stringify(existingCart));
     updateCartCount();
   };
 
   return (
-    <section
-      className="py-5"
-      style={{ background: "linear-gradient(to bottom, #ffffff, #f8f9fa)" }}
-    >
+    <section className="py-5" style={{ background: 'linear-gradient(to bottom, #ffffff, #f8f9fa)' }}>
       <Container>
         <div className="text-center mb-5">
-          <h2
-            className="fw-bold display-5 mb-3"
-            style={{
-              background: "linear-gradient(to right, #4e4376, #2b5876)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-            }}
-          >
+          <h2 className="fw-bold display-5 mb-3" style={{ 
+            background: 'linear-gradient(to right, #4e4376, #2b5876)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent'
+          }}>
             أفضل منتجاتنا
           </h2>
-          <p className="lead text-muted">
-            اكتشف مجموعتنا المميزة من المنتجات الأكثر مبيعاً
-          </p>
+          <p className="lead text-muted">اكتشف مجموعتنا المميزة من المنتجات الأكثر مبيعاً</p>
         </div>
 
         {loading ? (
           <div className="text-center py-5">
-            <Spinner
-              animation="border"
-              role="status"
-              style={{ width: "3rem", height: "3rem" }}
-            >
+            <Spinner animation="border" role="status" style={{ width: '3rem', height: '3rem' }}>
               <span className="visually-hidden">جاري التحميل...</span>
             </Spinner>
           </div>
@@ -94,70 +72,61 @@ const ProductGrid = () => {
                   <Card
                     className="h-100 border-0 shadow-hover"
                     style={{
-                      borderRadius: "16px",
-                      overflow: "hidden",
-                      transition: "all 0.3s ease",
+                      borderRadius: '16px',
+                      overflow: 'hidden',
+                      transition: 'all 0.3s ease',
                     }}
                   >
                     <div className="position-relative">
-                      <Card.Img
-                        variant="top"
-                        src={product.image}
-                        style={{
-                          height: "250px",
-                          objectFit: "cover",
-                          width: "100%",
-                        }}
+                      <Card.Img 
+                        variant="top" 
+                        src={product.image} 
+                        style={{ 
+                          height: '250px', 
+                          objectFit: 'cover',
+                          width: '100%'
+                        }} 
                       />
-                      <Badge
-                        pill
-                        bg="danger"
+                      <Badge 
+                        pill 
+                        bg="danger" 
                         className="position-absolute top-0 start-0 m-3 d-flex align-items-center"
                       >
-                        <FaFire className="me-1" /> الأكثر مبيعاً
+                        <FaFire className="me-1" />أفضل منتجاتنا
                       </Badge>
                       {product.rating && (
-                        <Badge
-                          pill
-                          bg="warning"
-                          text="dark"
+                        <Badge 
+                          pill 
+                          bg="warning" 
+                          text="dark" 
                           className="position-absolute top-0 end-0 m-3 d-flex align-items-center"
                         >
                           <FaStar className="me-1" /> {product.rating}
                         </Badge>
                       )}
                     </div>
-
+                    
                     <Card.Body className="d-flex flex-column">
                       <div className="d-flex justify-content-between align-items-center mb-2">
-                        <Card.Title
-                          className="mb-0 fw-bold"
-                          style={{ color: "#2b5876" }}
-                        >
+                        <Card.Title className="mb-0 fw-bold" style={{ color: '#2b5876' }}>
                           {product.name}
                         </Card.Title>
                         {product.category && (
-                          <small className="text-muted">
-                            {product.category}
-                          </small>
+                          <small className="text-muted">{product.category}</small>
                         )}
                       </div>
-
+                      
                       <div className="mt-auto">
                         <div className="d-flex justify-content-between align-items-center mb-3">
-                          <h5
-                            className="mb-0"
-                            style={{ color: "#dc3545", fontWeight: "bold" }}
-                          >
-                            {product.price && !isNaN(Number(product.price)) ? Number(product.price).toLocaleString() + ' جنيه':""}
-
+                          <h5 className="mb-0" style={{ color: '#dc3545', fontWeight: 'bold' }}>
+                            {product.price.toLocaleString()} جنيه
                           </h5>
                           <Button
                             variant="primary"
                             size="sm"
                             onClick={() => addToCart(product)}
                             className="d-flex align-items-center"
-                            style={{ borderRadius: "50px" }}
+                            style={{ borderRadius: '50px' }}
                           >
                             <FaCartPlus className="me-1" />
                             أضف للسلة
