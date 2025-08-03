@@ -149,9 +149,7 @@ const ProductGrid = () => {
                             className="mb-0"
                             style={{ color: "#dc3545", fontWeight: "bold" }}
                           >
-                            {product.price && !isNaN(Number(product.price))
-  ? Number(product.price).toLocaleString() + ' جنيه'
-  : 'غير متوفر'}
+                            {product.price && !isNaN(Number(product.price)) ? Number(product.price).toLocaleString() + ' جنيه':""}
 
                           </h5>
                           <Button

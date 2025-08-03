@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Container, Table, Card, Button, Badge, Spinner, Alert } from "react-bootstrap";
 import { FaTrash, FaCheck, FaTruck, FaUser, FaHome, FaPhone, FaMoneyBillWave } from "react-icons/fa";
 import Swal from "sweetalert2";
+import axios from "axios";
 
 interface Product {
   id: number;
@@ -11,6 +12,7 @@ interface Product {
 }
 
 interface Order {
+  _id: string;
   customer?: {
     name: string;
     address: string;
@@ -20,61 +22,68 @@ interface Order {
   cart: Product[];
   total: number;
   status?: string;
-  date?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
+
+const API_URL = "https://gracious-growth-production.up.railway.app/orders";
 
 const AdminOrdersPage = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState("all");
 
-useEffect(() => {
-  fetch("https://gracious-growth-production.up.railway.app/orders")
-    .then((res) => res.json())
-    .then((data) => {
-      setOrders(data.reverse()); // ترتيب تنازلي عشان الأحدث يظهر فوق
+  const fetchOrders = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const { data } = await axios.get<Order[]>(API_URL);
+      setOrders(data.reverse());
+    } catch (err) {
+      console.error("فشل في جلب الطلبات", err);
+      setError("فشل في تحميل الطلبات. يرجى المحاولة مرة أخرى.");
+    } finally {
       setLoading(false);
-    })
-    .catch((err) => {
-      console.error("فشل في تحميل الطلبات", err);
-      setLoading(false);
-    });
-}, []);
-
-
-  const updateOrders = (updated: Order[]) => {
-    setOrders(updated);
-    localStorage.setItem("orders", JSON.stringify(updated));
+    }
   };
 
-  const handleDeleteOrder = (index: number) => {
-    Swal.fire({
-      title: "حذف الطلب",
-      text: "هل أنت متأكد من حذف هذا الطلب؟ لا يمكن التراجع عن هذه العملية",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "نعم، احذف",
-      cancelButtonText: "إلغاء",
-      confirmButtonColor: "#d33",
-      reverseButtons: true
-    }).then((result) => {
+  useEffect(() => {
+    fetchOrders();
+  }, []);
+
+  const handleDeleteOrder = async (id: string) => {
+    try {
+      const result = await Swal.fire({
+        title: "حذف الطلب",
+        text: "هل أنت متأكد من حذف هذا الطلب؟ لا يمكن التراجع عن هذه العملية",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "نعم، احذف",
+        cancelButtonText: "إلغاء",
+        confirmButtonColor: "#d33",
+        reverseButtons: true
+      });
+
       if (result.isConfirmed) {
-        const updated = [...orders];
-        updated.splice(index, 1);
-        updateOrders(updated);
+        await axios.delete(`${API_URL}/${id}`);
+        await fetchOrders(); // إعادة جلب البيانات بعد الحذف
         Swal.fire("تم الحذف!", "تم حذف الطلب بنجاح.", "success");
       }
-    });
+    } catch (err) {
+      console.error("فشل في حذف الطلب", err);
+      Swal.fire("خطأ!", "فشل في حذف الطلب.", "error");
+    }
   };
 
-  const updateOrderStatus = (index: number, status: string) => {
-    const updated = [...orders];
-    updated[index] = {
-      ...updated[index],
-      status,
-      date: new Date().toISOString()
-    };
-    updateOrders(updated);
+  const updateOrderStatus = async (id: string, status: string) => {
+    try {
+      await axios.patch(`${API_URL}/${id}`, { status });
+      await fetchOrders(); // إعادة جلب البيانات بعد التحديث
+    } catch (err) {
+      console.error("فشل في تحديث حالة الطلب", err);
+      Swal.fire("خطأ!", "فشل في تحديث حالة الطلب.", "error");
+    }
   };
 
   const filteredOrders = orders.filter(order => {
@@ -92,6 +101,18 @@ useEffect(() => {
       default:
         return <Badge bg="primary" className="py-2 px-3">جديد</Badge>;
     }
+  };
+
+  const formatDate = (dateString?: string) => {
+    if (!dateString) return "---";
+    const date = new Date(dateString);
+    return date.toLocaleDateString("ar-EG", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit"
+    });
   };
 
   return (
@@ -133,9 +154,16 @@ useEffect(() => {
         </div>
       </div>
 
+      {error && (
+        <Alert variant="danger" className="mb-4">
+          {error}
+        </Alert>
+      )}
+
       {loading ? (
         <div className="text-center py-5">
           <Spinner animation="border" variant="primary" />
+          <p className="mt-2">جاري تحميل الطلبات...</p>
         </div>
       ) : filteredOrders.length === 0 ? (
         <Card className="text-center py-5">
@@ -145,8 +173,8 @@ useEffect(() => {
           </Card.Body>
         </Card>
       ) : (
-        filteredOrders.map((order, idx) => (
-          <Card className="mb-4 shadow-sm border-0" key={idx}>
+        filteredOrders.map((order) => (
+          <Card className="mb-4 shadow-sm border-0" key={order._id}>
             <Card.Header className="bg-light d-flex justify-content-between align-items-center py-3">
               <div className="d-flex flex-wrap align-items-center gap-3">
                 <div className="d-flex align-items-center">
@@ -160,6 +188,9 @@ useEffect(() => {
                 <div className="d-flex align-items-center">
                   <FaPhone className="text-muted me-2" />
                   <span>{order.customer?.phone || "---"}</span>
+                </div>
+                <div className="text-muted small">
+                  {formatDate(order.createdAt)}
                 </div>
               </div>
               <div>
@@ -202,21 +233,21 @@ useEffect(() => {
                 <div className="d-flex gap-2">
                   <Button
                     variant={order.status === "قيد التجهيز" ? "warning" : "outline-warning"}
-                    onClick={() => updateOrderStatus(idx, "قيد التجهيز")}
+                    onClick={() => updateOrderStatus(order._id, "قيد التجهيز")}
                     size="sm"
                   >
                     <FaTruck className="me-1" /> قيد التجهيز
                   </Button>
                   <Button
                     variant={order.status === "مكتمل" ? "success" : "outline-success"}
-                    onClick={() => updateOrderStatus(idx, "مكتمل")}
+                    onClick={() => updateOrderStatus(order._id, "مكتمل")}
                     size="sm"
                   >
                     <FaCheck className="me-1" /> مكتمل
                   </Button>
                   <Button
                     variant="outline-danger"
-                    onClick={() => handleDeleteOrder(idx)}
+                    onClick={() => handleDeleteOrder(order._id)}
                     size="sm"
                   >
                     <FaTrash className="me-1" /> حذف
