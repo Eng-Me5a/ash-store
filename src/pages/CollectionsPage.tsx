@@ -145,7 +145,7 @@ const CollectionsPage = () => {
                               </p>
                               <div className="d-flex justify-content-between align-items-center mt-auto">
                                 <span className="text-danger fw-bold fs-5">
-                                  {product.price}
+                                  {product.price} جنيه
                                 </span>
                                 <Button
                                   variant="primary"

@@ -14,6 +14,9 @@ const Header = () => {
     navigate('/login');
   };
 
+  // إغلاق القائمة عند النقر على رابط
+  const [expanded, setExpanded] = React.useState(false);
+
   return (
     <Navbar 
       expand="lg" 
@@ -23,6 +26,7 @@ const Header = () => {
         backdropFilter: 'blur(10px)',
         borderBottom: '1px solid rgba(0, 0, 0, 0.1)'
       }}
+      expanded={expanded}
     >
       <Container>
         <Navbar.Brand as={Link} to="/" className="d-flex align-items-center">
@@ -39,11 +43,45 @@ const Header = () => {
           </span>
         </Navbar.Brand>
 
-        <Navbar.Toggle aria-controls="basic-navbar-nav" className="border-0">
+        <Navbar.Toggle 
+          aria-controls="basic-navbar-nav" 
+          className="border-0 d-lg-none d-flex align-items-center"
+          onClick={() => setExpanded(expanded ? false : true)}
+        >
           <span className="navbar-toggler-icon"></span>
+
+          {/* السلة بجانب التلت شرطات في وضع الهاتف فقط */}
+          <Link 
+            to="/cart" 
+            className="position-relative d-lg-none ms-3 d-flex align-items-center text-decoration-none"
+            style={{
+              color: '#333',
+              borderRadius: '50px',
+            }}
+            onClick={() => setExpanded(false)}
+          >
+            <FaShoppingCart style={{ fontSize: '1.3rem' }} />
+            {cartCount > 0 && (
+              <Badge 
+                pill 
+                bg="danger"
+                className="position-absolute top-0 start-100 translate-middle"
+                style={{ 
+                  fontSize: '0.65rem',
+                  padding: '0.35em 0.5em'
+                }}
+              >
+                {cartCount}
+              </Badge>
+            )}
+          </Link>
         </Navbar.Toggle>
         
-        <Navbar.Collapse id="basic-navbar-nav" className="justify-content-end">
+        <Navbar.Collapse 
+          id="basic-navbar-nav" 
+          className="justify-content-end"
+          onSelect={() => setExpanded(false)}
+        >
           <Nav className="align-items-center gap-3">
             <NavLink 
               to="/" 
@@ -52,6 +90,7 @@ const Header = () => {
                 fontWeight: isActive ? '600' : '400',
                 color: isActive ? '#4e4376' : '#333'
               })}
+              onClick={() => setExpanded(false)}
             >
               الرئيسية
             </NavLink>
@@ -63,6 +102,7 @@ const Header = () => {
                 fontWeight: isActive ? '600' : '400',
                 color: isActive ? '#4e4376' : '#333'
               })}
+              onClick={() => setExpanded(false)}
             >
               كولكشن
             </NavLink>
@@ -74,6 +114,7 @@ const Header = () => {
                 fontWeight: isActive ? '600' : '400',
                 color: isActive ? '#4e4376' : '#333'
               })}
+              onClick={() => setExpanded(false)}
             >
               المنتجات
             </NavLink>
@@ -85,13 +126,14 @@ const Header = () => {
                 fontWeight: isActive ? '600' : '400',
                 color: isActive ? '#4e4376' : '#333'
               })}
+              onClick={() => setExpanded(false)}
             >
               نبذة عنا
             </NavLink>
 
             <Link 
               to="/cart" 
-              className="position-relative d-flex align-items-center text-decoration-none"
+              className="position-relative d-flex align-items-center text-decoration-none d-lg-none"
               style={{
                 color: '#333',
                 padding: '0.5rem 1rem',
@@ -104,6 +146,7 @@ const Header = () => {
               onMouseLeave={(e) => {
                 e.currentTarget.style.background = 'transparent';
               }}
+              onClick={() => setExpanded(false)}
             >
               <FaShoppingCart className="me-2" style={{ fontSize: '1.2rem' }} />
               السلة
@@ -126,7 +169,10 @@ const Header = () => {
               <Button 
                 variant="outline-danger" 
                 size="sm" 
-                onClick={handleLogout}
+                onClick={() => {
+                  handleLogout();
+                  setExpanded(false);
+                }}
                 className="d-flex align-items-center gap-1"
               >
                 <FaSignOutAlt /> تسجيل الخروج
@@ -135,6 +181,7 @@ const Header = () => {
               <Link 
                 to="/login" 
                 className="btn btn-outline-primary btn-sm d-flex align-items-center gap-1"
+                onClick={() => setExpanded(false)}
               >
                 <FaUser /> تسجيل الدخول
               </Link>

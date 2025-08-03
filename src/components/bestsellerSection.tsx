@@ -119,7 +119,7 @@ const BishtatSection = () => {
                       <div className="mt-auto">
                         <div className="d-flex justify-content-between align-items-center mb-3">
                           <h5 className="mb-0" style={{ color: '#dc3545', fontWeight: 'bold' }}>
-                            {item.price}
+                            {item.price} جنيه
                           </h5>
                           <Button
                             variant="primary"

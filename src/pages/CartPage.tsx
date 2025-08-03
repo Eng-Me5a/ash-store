@@ -150,7 +150,7 @@ const CartPage = () => {
                 />
                 <div>
                   <h5 className="mb-1">{item.title}</h5>
-                  <p className="mb-0 text-danger fw-bold">السعر: {item.price} جنيه</p>
+                  <p className="mb-0 text-danger fw-bold">السعر: {item.price} جنيه </p>
                   <p className="mb-0 text-secondary">الكمية: {item.quantity || 1}</p>
                   <p className="mb-0 fw-bold text-success">
                     الإجمالي: {(item.quantity || 1) * parseInt(item.price)} جنيه
